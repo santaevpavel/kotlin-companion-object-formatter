@@ -100,4 +100,35 @@ class KtCompanionObjectNewPlacementFinderTest {
         assertThat(result, IsInstanceOf(Result.PlacementAfter::class.java))
         assertEquals((result as KtCompanionObjectNewPlacementFinder.Result.PlacementAfter).element, barFunction)
     }
+
+    @Test
+    fun `should find bottom of inner class`() {
+        val file =
+            """class Sample {
+
+                fun foo(): Int = 0
+
+                private fun bar(): Int {
+                    return 0
+                }
+
+                inner class Inner {
+                    fun fooInner(): Int = 0
+
+                    companion object {
+                        private const val A = "a"
+                    }
+                }
+            }
+            """
+        val ktFile = KtFileReader().fromString(file)
+        val ktClass = KtСlassFinder("Inner").also { ktFile.accept(it) }.klass
+        val fooInnerFunction = KtFunctionFinder("fooInner").also { ktFile.accept(it) }.function
+
+        val result = placementFinder.findCompanionObjectNewPlacementLine(ktFile, ktClass!!)
+
+        assertThat(result, IsInstanceOf(Result.PlacementAfter::class.java))
+        assertEquals((result as KtCompanionObjectNewPlacementFinder.Result.PlacementAfter).element, fooInnerFunction)
+    }
+
 }

@@ -7,11 +7,11 @@ import org.junit.Test
 
 class KtCompanionFinderTest {
 
-    private lateinit var finder: KtCompanionFinder
+    private lateinit var finder: KtCompanionObjectFinder
 
     @Before
     fun setUp() {
-        finder = KtCompanionFinder()
+        finder = KtCompanionObjectFinder()
     }
 
     @Test
@@ -74,5 +74,33 @@ class KtCompanionFinderTest {
         val result = finder.findCompanionObjects(ktFile)
 
         assertThat(result.companionObjects, IsEmptyCollection())
+    }
+
+    @Test
+    fun `should find two companion object`() {
+        val file =
+            """class Sample {
+
+                companion object {
+                    private val AA = "asd"
+                }
+
+                fun foo(): Int = 0
+
+                private fun bar(): Int {
+                    return 0
+                }
+
+                class Inner {
+                    companion object {
+                        private val AA = "asd"
+                    }
+                }
+            }
+            """
+        val ktFile = KtFileReader().fromString(file)
+        val result = finder.findCompanionObjects(ktFile)
+
+        assertThat(result.companionObjects, IsCollectionWithSize(IsEqual(2)))
     }
 }

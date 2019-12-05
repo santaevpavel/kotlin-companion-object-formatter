@@ -1,15 +1,7 @@
 import org.jetbrains.kotlin.psi.*
 
 
-fun main() {
-
-    val ktFile =
-        KtFileReader().read("C:\\Users\\workLaptop\\Documents\\Projects\\companion-formatter\\src\\main\\kotlin\\Sample.kt")
-
-    KtCompanionFinder().findCompanionObjects(ktFile)
-}
-
-class KtCompanionFinder {
+class KtCompanionObjectFinder {
 
     companion object {
         private const val COMPANION_OBJECT_DECLARATION = "companion object"

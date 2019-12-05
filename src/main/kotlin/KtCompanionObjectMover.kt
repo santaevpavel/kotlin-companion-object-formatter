@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtObjectDeclaration
 
-class CompanionObjectMover(
+class KtCompanionObjectMover(
     private val elementBoundFinder: KtElementBoundFinder
 ) {
 
@@ -21,7 +21,7 @@ class CompanionObjectMover(
         val contentLines = content.lines().toMutableList()
         val companionObjectLines = content.lines().filterIndexed { index, _ -> (index + 1) in companionBounds.range }
         val numberOfRemovedLines = removeCompanionObject(contentLines, companionBounds)
-        val companionNewPlacementLine = topElementBounds.endLine - numberOfRemovedLines + 1
+        val companionNewPlacementLine = topElementBounds.endLine - numberOfRemovedLines
         insertCompanionObject(companionObjectLines, contentLines, companionNewPlacementLine)
         return contentLines.joinToString(LINE_SEPARATOR)
     }
@@ -50,10 +50,10 @@ class CompanionObjectMover(
         contentLines: MutableList<String>,
         companionNewPlacementLine: Int
     ) {
-        contentLines.add(LINE_SEPARATOR)
+        contentLines.add(companionNewPlacementLine, "")
         companionObjectLines
             .forEachIndexed { index, line ->
-                contentLines.add(companionNewPlacementLine + index - 1, line)
+                contentLines.add(companionNewPlacementLine + index + 1, line)
             }
     }
 }
