@@ -15,13 +15,14 @@ class KtCompanionObjectFinder {
 
             override fun visitObjectDeclaration(declaration: KtObjectDeclaration) {
                 super.visitObjectDeclaration(declaration)
-                declaration.text.startsWith(COMPANION_OBJECT_DECLARATION)
-                val companionBody = declaration.children
-                    .filterIsInstance(KtClassBody::class.java)
-                    .firstOrNull()
-                val containingClass = currentClass
-                if (companionBody != null && containingClass != null) {
-                    companionObjects.add(CompanionObject(file, containingClass, declaration))
+                if (declaration.text.startsWith(COMPANION_OBJECT_DECLARATION)) {
+                    val companionBody = declaration.children
+                        .filterIsInstance(KtClassBody::class.java)
+                        .firstOrNull()
+                    val containingClass = currentClass
+                    if (companionBody != null && containingClass != null) {
+                        companionObjects.add(CompanionObject(file, containingClass, declaration))
+                    }
                 }
             }
 

@@ -77,6 +77,26 @@ class KtCompanionFinderTest {
     }
 
     @Test
+    fun `should not find object`() {
+        val file =
+            """class Sample {
+
+                fun foo(): Int = 0
+
+                private fun bar(): Int {
+                    return object: IInterface {
+                        fun function() = 2
+                    }
+                }
+            }
+            """
+        val ktFile = KtFileReader().fromString(file)
+        val result = finder.findCompanionObjects(ktFile)
+
+        assertThat(result.companionObjects, IsEmptyCollection())
+    }
+
+    @Test
     fun `should find two companion object`() {
         val file =
             """class Sample {
