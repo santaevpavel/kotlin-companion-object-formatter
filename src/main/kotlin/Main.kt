@@ -9,10 +9,6 @@ fun main(args: Array<String>) {
 
 class KotlinCompanionObjectFormatterProgram : CliktCommand() {
 
-    companion object {
-        private const val KT_FILE_EXTENSION = ".kt"
-    }
-
     private val path: File by argument(help = "Path of directory with kotlin files").file()
 
     override fun run() {
@@ -45,6 +41,10 @@ class KotlinCompanionObjectFormatterProgram : CliktCommand() {
             fileReader = KtFileReader(),
             companionNewPlacementFinder = KtCompanionObjectNewPlacementFinder()
         ).format(file)
+    }
+
+    companion object {
+        private const val KT_FILE_EXTENSION = ".kt"
     }
 }
 

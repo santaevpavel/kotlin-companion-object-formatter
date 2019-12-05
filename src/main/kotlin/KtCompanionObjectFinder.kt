@@ -3,10 +3,6 @@ import org.jetbrains.kotlin.psi.*
 
 class KtCompanionObjectFinder {
 
-    companion object {
-        private const val COMPANION_OBJECT_DECLARATION = "companion object"
-    }
-
     fun findCompanionObjects(file: KtFile): FindResult {
         val companionObjects = mutableListOf<CompanionObject>()
 
@@ -37,6 +33,10 @@ class KtCompanionObjectFinder {
             }
         }.visitKtFile(file)
         return FindResult(companionObjects)
+    }
+
+    companion object {
+        private const val COMPANION_OBJECT_DECLARATION = "companion object"
     }
 
     data class FindResult(

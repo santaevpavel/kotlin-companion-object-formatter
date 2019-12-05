@@ -6,10 +6,6 @@ class KtCompanionObjectMover(
     private val elementBoundFinder: KtElementBoundFinder
 ) {
 
-    companion object {
-        private const val LINE_SEPARATOR = "\n"
-    }
-
     fun moveCompanionObject(
         ktFile: KtFile,
         companionObject: KtObjectDeclaration,
@@ -55,6 +51,10 @@ class KtCompanionObjectMover(
             .forEachIndexed { index, line ->
                 contentLines.add(companionNewPlacementLine + index + 1, line)
             }
+    }
+
+    companion object {
+        private const val LINE_SEPARATOR = "\n"
     }
 }
 
