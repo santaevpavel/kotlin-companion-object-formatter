@@ -1,9 +1,8 @@
 import org.hamcrest.Matchers.equalTo
-import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.psi.KtTreeVisitorVoid
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import utils.KtFunctionFinder
 
 class KtElementBoundFinderTest {
 
@@ -86,15 +85,4 @@ class KtElementBoundFinderTest {
         Assert.assertThat(bounds.endLine, equalTo(11))
     }
 
-    private class KtFunctionFinder(private val name: String) : KtTreeVisitorVoid() {
-
-        var function: KtNamedFunction? = null
-
-        override fun visitNamedFunction(function: KtNamedFunction) {
-            super.visitNamedFunction(function)
-            if (function.name == name) {
-                this.function = function
-            }
-        }
-    }
 }

@@ -24,5 +24,7 @@ class KtElementBoundFinder {
         )
     }
 
-    data class Bounds(val startLine: Int, val endLine: Int)
+    data class Bounds(val startLine: Int, val endLine: Int) {
+        val range = IntRange(startLine, endLine)
+    }
 }

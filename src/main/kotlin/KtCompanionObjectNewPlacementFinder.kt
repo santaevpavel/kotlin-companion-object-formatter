@@ -1,33 +1,20 @@
 import org.jetbrains.kotlin.psi.*
 
-class KtCompanionFormatter {
-
-    fun format(
-        ktFile: KtFile,
-        containingClass: KtClass,
-        companionObject: KtObjectDeclaration
-    ) {
-        /*val companionObjectStartLine = companionObject.node.line(ktFile)
-        val companionObjectEndLine = companionObject.node.line(ktFile)*/
-    }
-
-}
-
 class KtCompanionObjectNewPlacementFinder {
 
     fun findCompanionObjectNewPlacementLine(
         ktFile: KtFile,
         ktClass: KtClass
-    ): Results {
+    ): Result {
         val classBody = ktClass.children
             .filterIsInstance<KtClassBody>()
             .firstOrNull()
-            ?: return Results.NoPlacement
+            ?: return Result.NoPlacement
         val lastNonClassElement = getFunctionsAndClasses(classBody).lastOrNull { it !is KtClass }
         return if (lastNonClassElement == null) {
-            Results.NoPlacement
+            Result.NoPlacement
         } else {
-            Results.PlacementAfter(lastNonClassElement)
+            Result.PlacementAfter(lastNonClassElement)
         }
     }
 
@@ -49,10 +36,10 @@ class KtCompanionObjectNewPlacementFinder {
         return functionsAndClasses
     }
 
-    sealed class Results {
+    sealed class Result {
 
-        object NoPlacement : Results()
+        object NoPlacement : Result()
 
-        class PlacementAfter(val element: KtElement) : Results()
+        class PlacementAfter(val element: KtElement) : Result()
     }
 }
