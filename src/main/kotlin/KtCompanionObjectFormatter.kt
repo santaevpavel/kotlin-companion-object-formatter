@@ -1,5 +1,8 @@
+import mu.KotlinLogging
 import org.jetbrains.kotlin.psi.KtFile
 import java.io.File
+
+private val logger = KotlinLogging.logger {}
 
 class KtCompanionObjectFormatter(
     private val companionFinder: KtCompanionObjectFinder,
@@ -12,9 +15,11 @@ class KtCompanionObjectFormatter(
         val ktFile = fileReader.read(file.absolutePath)
         val result = format(ktFile)
         if (result != null) {
-            println(result)
+            logger.info { "${file.absolutePath} formatted" }
             file.delete()
             file.writeText(result)
+        } else {
+            logger.info { "${file.absolutePath} no need to format" }
         }
     }
 
