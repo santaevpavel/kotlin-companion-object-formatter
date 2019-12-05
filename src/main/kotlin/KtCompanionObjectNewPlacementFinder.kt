@@ -10,7 +10,10 @@ class KtCompanionObjectNewPlacementFinder {
             .filterIsInstance<KtClassBody>()
             .firstOrNull()
             ?: return Result.NoPlacement
-        val lastNonClassElement = getFunctionsAndClasses(classBody).lastOrNull { it !is KtClass }
+        val lastNonClassElement = getFunctionsAndClasses(classBody)
+            .lastOrNull { ktElement ->
+                ktElement !is KtClass && ktElement !is KtObjectDeclaration
+            }
         return if (lastNonClassElement == null) {
             Result.NoPlacement
         } else {
@@ -30,6 +33,11 @@ class KtCompanionObjectNewPlacementFinder {
             override fun visitClass(klass: KtClass) {
                 super.visitClass(klass)
                 functionsAndClasses.add(klass)
+            }
+
+            override fun visitProperty(property: KtProperty) {
+                super.visitProperty(property)
+                functionsAndClasses.add(property)
             }
         }
         classBody.acceptChildren(visitor)

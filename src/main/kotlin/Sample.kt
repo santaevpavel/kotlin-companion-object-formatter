@@ -9,5 +9,13 @@ class Sample {
     private fun bar(): Int {
         return 0
     }
+
+    class Inner {
+        companion object {
+            private const val AAAA = 0
+        }
+
+        val a = 0
+    }
 }
 
