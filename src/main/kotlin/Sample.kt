@@ -17,5 +17,20 @@ class Sample {
 
         val a = 0
     }
+
+    enum class EnumClass {
+        FIRST,
+        SECOND;
+
+        companion object {
+            private const val AAAA = 0
+
+            fun func() {
+
+            }
+        }
+
+        val a = 0
+    }
 }
 

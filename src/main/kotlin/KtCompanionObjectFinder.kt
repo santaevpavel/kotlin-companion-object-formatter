@@ -27,9 +27,13 @@ class KtCompanionObjectFinder {
             }
 
             override fun visitClass(klass: KtClass) {
-                currentClass = klass
-                super.visitClass(klass)
-                currentClass = null
+                if (klass !is KtEnumEntry) {
+                    currentClass = klass
+                    super.visitClass(klass)
+                    currentClass = null
+                } else {
+                    super.visitClass(klass)
+                }
             }
         }.visitKtFile(file)
         return FindResult(companionObjects)
