@@ -34,55 +34,53 @@ class KtCompanionObjectFormatter(
 
     private fun format(ktFile: KtFile): FormatResult {
         var formatResult: FormatResult.Formatted? = null
-        do {
-            val newKtFile = if (formatResult == null) {
-                ktFile
-            } else {
-                fileReader.fromString(formatResult.content)
-            }
-            val result = formatInternal(newKtFile)
-            when (result) {
+        var currentKtFile: KtFile = ktFile
+        while (true) {
+            val internalFormatResult = formatInternal(currentKtFile)
+            when (internalFormatResult) {
                 is FormatResult.NoCompanion,
                 is FormatResult.FormatNotNeeded -> {
-                    return formatResult ?: result
+                    return formatResult ?: internalFormatResult
                 }
                 is FormatResult.Formatted -> {
-                    formatResult = result
+                    formatResult = internalFormatResult
                 }
             }
-        } while (true)
+
+            currentKtFile = fileReader.fromString(formatResult.content)
+        }
     }
 
     private fun formatInternal(ktFile: KtFile): FormatResult {
         val companionObjectFindResult = companionFinder.findCompanionObjects(ktFile)
-        val formatResults = companionObjectFindResult.companionObjects.map { companion ->
-            val companionNewPlacement = companionNewPlacementFinder.findCompanionObjectNewPlacementLine(
-                ktFile = ktFile,
-                ktClass = companion.containingClass
-            )
-            when (companionNewPlacement) {
-                is Result.NoPlacement -> {
-                    return@map FormatResult.FormatNotNeeded
-                }
-                is Result.PlacementAfter -> {
-                    if (!isNeedToMoveCompanionObject(companion.companionObject, companionNewPlacement.element)) {
-                        return@map FormatResult.FormatNotNeeded
-                    } else {
-                        val content = companionMover.moveCompanionObject(
-                            ktFile = ktFile,
-                            companionObject = companion.companionObject,
-                            moveAfterElement = companionNewPlacement.element
-                        )
-                        return FormatResult.Formatted(content, listOf(companion.containingClass))
-                    }
-                }
+        if (companionObjectFindResult.companionObjects.isEmpty()) {
+            return FormatResult.NoCompanion
+        }
+
+        val companionPlacementToMove = companionObjectFindResult.companionObjects
+            .map { companion ->
+                val companionNewPlacement = companionNewPlacementFinder.findCompanionObjectNewPlacementLine(
+                    ktFile = ktFile,
+                    ktClass = companion.containingClass
+                )
+                companion to companionNewPlacement
             }
+            .filter { (_, companionNewPlacement) -> companionNewPlacement is Result.PlacementAfter }
+            .map { (a, b) -> a to b as Result.PlacementAfter }
+            .firstOrNull { (companion, companionNewPlacement) ->
+                isNeedToMoveCompanionObject(companion.companionObject, companionNewPlacement.element)
+            }
+
+        if (companionPlacementToMove != null) {
+            val content = companionMover.moveCompanionObject(
+                ktFile = ktFile,
+                companionObject = companionPlacementToMove.first.companionObject,
+                moveAfterElement = companionPlacementToMove.second.element
+            )
+            return FormatResult.Formatted(content, listOf(companionPlacementToMove.first.containingClass))
         }
-        return if (formatResults.isEmpty()) {
-            FormatResult.NoCompanion
-        } else {
-            FormatResult.FormatNotNeeded
-        }
+
+        return FormatResult.FormatNotNeeded
     }
 
     private fun isNeedToMoveCompanionObject(
@@ -90,7 +88,7 @@ class KtCompanionObjectFormatter(
         newPlacementAfter: KtElement
     ): Boolean {
         val classBody = ktObjectDeclaration.parent as? KtClassBody
-        val ktElementChildren = classBody?.children?.filter { it is KtElement }
+        val ktElementChildren = classBody?.children?.filterIsInstance<KtElement>()
         val companionIdx = ktElementChildren?.indexOf(ktObjectDeclaration)
         if (companionIdx == null || companionIdx < 0) {
             return false

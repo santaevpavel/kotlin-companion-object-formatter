@@ -13,7 +13,7 @@ class KtCompanionObjectFinder {
                 super.visitObjectDeclaration(declaration)
                 if (declaration.text.startsWith(COMPANION_OBJECT_DECLARATION)) {
                     val companionBody = declaration.children
-                        .filterIsInstance(KtClassBody::class.java)
+                        .filterIsInstance<KtClassBody>()
                         .firstOrNull()
                     val containingClass = currentClass
                     if (companionBody != null && containingClass != null) {
