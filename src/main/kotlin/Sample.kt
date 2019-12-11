@@ -28,10 +28,9 @@ class Sample {
         companion object {
             private const val AAAA = 0
 
-            fun func() {
-
+            fun func(): Int {
+                return 0
             }
         }
     }
 }
-

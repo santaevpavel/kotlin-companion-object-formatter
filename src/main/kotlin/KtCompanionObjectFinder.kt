@@ -1,6 +1,5 @@
 import org.jetbrains.kotlin.psi.*
 
-
 class KtCompanionObjectFinder {
 
     fun findCompanionObjects(file: KtFile): FindResult {
@@ -49,4 +48,3 @@ class KtCompanionObjectFinder {
         val companionObject: KtObjectDeclaration
     )
 }
-

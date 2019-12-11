@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+    <Blacklist></Blacklist>
+    <Whitelist>
+        <ID>FunctionOnlyReturningConstant:Sample.kt$Sample$fun foo(): Int</ID>
+        <ID>FunctionOnlyReturningConstant:Sample.kt$Sample$private fun bar(): Int</ID>
+        <ID>FunctionOnlyReturningConstant:Sample.kt$Sample.EnumClass.Companion$fun func(): Int</ID>
+        <ID>MaxLineLength:KtFileReader.kt$KtFileReader$private</ID>
+        <ID>NewLineAtEndOfFile:KtCompanionObjectFormatter.kt$.KtCompanionObjectFormatter.kt</ID>
+        <ID>NewLineAtEndOfFile:KtCompanionObjectNewPlacementFinder.kt$.KtCompanionObjectNewPlacementFinder.kt</ID>
+        <ID>NewLineAtEndOfFile:KtElementBoundFinder.kt$.KtElementBoundFinder.kt</ID>
+        <ID>NewLineAtEndOfFile:KtFileReader.kt$.KtFileReader.kt</ID>
+        <ID>NewLineAtEndOfFile:line.kt$utils.line.kt</ID>
+        <ID>ReturnCount:KtCompanionObjectFormatter.kt$KtCompanionObjectFormatter$private fun formatInternal(ktFile:
+            KtFile): FormatResult
+        </ID>
+    </Whitelist>
+</SmellBaseline>
