@@ -19,7 +19,7 @@ class KtCompanionFinderTest {
     @Test
     fun `should find companion object on class top`() {
         val file =
-            """class ru.santaev.companionObjectFormatter.Sample {
+            """class Sample {
 
                 companion object {
                     private const val AAAA = 0
@@ -41,7 +41,7 @@ class KtCompanionFinderTest {
     @Test
     fun `should find companion object on class bottom`() {
         val file =
-            """class ru.santaev.companionObjectFormatter.Sample {
+            """class Sample {
 
                 fun foo(): Int = 0
 
@@ -63,7 +63,7 @@ class KtCompanionFinderTest {
     @Test
     fun `should not find companion object`() {
         val file =
-            """class ru.santaev.companionObjectFormatter.Sample {
+            """class Sample {
 
                 fun foo(): Int = 0
 
@@ -81,7 +81,7 @@ class KtCompanionFinderTest {
     @Test
     fun `should not find object`() {
         val file =
-            """class ru.santaev.companionObjectFormatter.Sample {
+            """class Sample {
 
                 fun foo(): Int = 0
 
@@ -101,7 +101,7 @@ class KtCompanionFinderTest {
     @Test
     fun `should find two companion object`() {
         val file =
-            """class ru.santaev.companionObjectFormatter.Sample {
+            """class Sample {
 
                 companion object {
                     private val AA = "asd"

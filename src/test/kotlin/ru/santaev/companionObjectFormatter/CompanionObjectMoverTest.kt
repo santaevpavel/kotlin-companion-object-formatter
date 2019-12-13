@@ -19,7 +19,7 @@ class CompanionObjectMoverTest {
     @Test
     fun `should move companion after specified function`() {
         val file =
-            """class ru.santaev.companionObjectFormatter.Sample {
+            """class Sample {
 
                 companion object {
                     private const val AA = "123"
@@ -46,7 +46,7 @@ class CompanionObjectMoverTest {
         println(result)
 
         val expectingResult =
-            """class ru.santaev.companionObjectFormatter.Sample {
+            """class Sample {
 
                 fun foo(): Int = 0
 
@@ -65,7 +65,7 @@ class CompanionObjectMoverTest {
     @Test
     fun `should move companion after specified function in inner class`() {
         val file =
-            """class ru.santaev.companionObjectFormatter.Sample {
+            """class Sample {
 
                 class Inner {
                     companion object {
@@ -90,7 +90,7 @@ class CompanionObjectMoverTest {
         println(result)
 
         val expectingResult =
-            """class ru.santaev.companionObjectFormatter.Sample {
+            """class Sample {
 
                 class Inner {
 

@@ -59,4 +59,3 @@ class KtCompanionObjectMover(
         private const val LINE_SEPARATOR = "\n"
     }
 }
-
