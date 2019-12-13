@@ -1,3 +1,5 @@
+package ru.santaev.companionObjectFormatter
+
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
@@ -12,12 +14,12 @@ import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.kotlin.psi.KtFile
 import java.io.File
 
-class KtFileReader {
+class KtFileParser {
 
     private val psiFileFactory: PsiFileFactory =
         PsiFileFactory.getInstance(createKotlinCoreEnvironment().project)
 
-    fun read(path: String): KtFile {
+    fun parseFile(path: String): KtFile {
         val content = File(path).readText()
         return psiFileFactory.createFileFromText(
             path,
@@ -26,7 +28,7 @@ class KtFileReader {
         ) as KtFile
     }
 
-    fun fromString(content: String): KtFile {
+    fun parseString(content: String): KtFile {
         return psiFileFactory.createFileFromText(
             "",
             KotlinLanguage.INSTANCE,
@@ -34,7 +36,9 @@ class KtFileReader {
         ) as KtFile
     }
 
-    private fun createKotlinCoreEnvironment(configuration: CompilerConfiguration = CompilerConfiguration()): KotlinCoreEnvironment {
+    private fun createKotlinCoreEnvironment(
+        configuration: CompilerConfiguration = CompilerConfiguration()
+    ): KotlinCoreEnvironment {
         // https://github.com/JetBrains/kotlin/commit/2568804eaa2c8f6b10b735777218c81af62919c1
         setIdeaIoUseFallback()
         configuration.put(

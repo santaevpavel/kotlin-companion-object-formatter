@@ -1,8 +1,10 @@
+package ru.santaev.companionObjectFormatter
+
 import org.hamcrest.Matchers.equalTo
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import utils.KtFunctionFinder
+import ru.santaev.companionObjectFormatter.utils.KtFunctionFinder
 
 class KtElementBoundFinderTest {
 
@@ -16,7 +18,7 @@ class KtElementBoundFinderTest {
     @Test
     fun `should find bounds of function`() {
         val file =
-            """class Sample {
+            """class ru.santaev.companionObjectFormatter.Sample {
 
                 fun foo(): Int {
                     val i = 0
@@ -28,7 +30,7 @@ class KtElementBoundFinderTest {
                 }
             }
             """
-        val ktFile = KtFileReader().fromString(file)
+        val ktFile = KtFileParser().parseString(file)
         val fooFunction = KtFunctionFinder("foo").also { ktFile.accept(it) }.function
 
         val bounds = finder.find(ktFile, fooFunction!!)
@@ -40,7 +42,7 @@ class KtElementBoundFinderTest {
     @Test
     fun `should find bounds of one line function`() {
         val file =
-            """class Sample {
+            """class ru.santaev.companionObjectFormatter.Sample {
 
                 fun foo(): Int {
                     val i = 0
@@ -50,7 +52,7 @@ class KtElementBoundFinderTest {
                 private fun bar() = 3
             }
             """
-        val ktFile = KtFileReader().fromString(file)
+        val ktFile = KtFileParser().parseString(file)
         val fooFunction = KtFunctionFinder("bar").also { ktFile.accept(it) }.function
 
         val bounds = finder.find(ktFile, fooFunction!!)
@@ -62,7 +64,7 @@ class KtElementBoundFinderTest {
     @Test
     fun `should find bounds of expression function`() {
         val file =
-            """class Sample {
+            """class ru.santaev.companionObjectFormatter.Sample {
 
                 fun foo(): Int {
                     val i = 0
@@ -76,7 +78,7 @@ class KtElementBoundFinderTest {
 
             }
             """
-        val ktFile = KtFileReader().fromString(file)
+        val ktFile = KtFileParser().parseString(file)
         val fooFunction = KtFunctionFinder("bar").also { ktFile.accept(it) }.function
 
         val bounds = finder.find(ktFile, fooFunction!!)
@@ -84,5 +86,4 @@ class KtElementBoundFinderTest {
         Assert.assertThat(bounds.startLine, equalTo(8))
         Assert.assertThat(bounds.endLine, equalTo(11))
     }
-
 }

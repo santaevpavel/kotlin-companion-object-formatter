@@ -1,6 +1,11 @@
-import KtCompanionObjectNewPlacementFinder.Result
+package ru.santaev.companionObjectFormatter
+
 import mu.KotlinLogging
 import org.jetbrains.kotlin.psi.*
+import ru.santaev.companionObjectFormatter.KtCompanionObjectFinder.CompanionObject
+import ru.santaev.companionObjectFormatter.KtCompanionObjectFinder.FindResult
+import ru.santaev.companionObjectFormatter.placementFinder.IKtCompanionObjectPlacementFinder
+import ru.santaev.companionObjectFormatter.placementFinder.IKtCompanionObjectPlacementFinder.Placement
 import java.io.File
 
 private val logger = KotlinLogging.logger {}
@@ -8,19 +13,19 @@ private val logger = KotlinLogging.logger {}
 class KtCompanionObjectFormatter(
     private val companionFinder: KtCompanionObjectFinder,
     private val companionMover: KtCompanionObjectMover,
-    private val fileReader: KtFileReader,
-    private val companionNewPlacementFinder: KtCompanionObjectNewPlacementFinder
+    private val fileParser: KtFileParser,
+    private val companionNewPlacementFinder: IKtCompanionObjectPlacementFinder
 ) {
 
     fun format(file: File) {
-        val ktFile = fileReader.read(file.absolutePath)
-        val formatResult = format(ktFile)
+        val ktFile = fileParser.parseFile(file.absolutePath)
+        val formatResult = formatKtFile(ktFile)
         when (formatResult) {
             is FormatResult.NoCompanion -> {
-                logger.info { "${file.canonicalPath} no need to format (no companion object)" }
+                logger.info { "${file.canonicalPath} no need to formatKtFile (no companion object)" }
             }
             is FormatResult.FormatNotNeeded -> {
-                logger.info { "${file.canonicalPath} no need to format" }
+                logger.info { "${file.canonicalPath} no need to formatKtFile" }
             }
             is FormatResult.Formatted -> {
                 file.delete()
@@ -32,11 +37,11 @@ class KtCompanionObjectFormatter(
         }
     }
 
-    private fun format(ktFile: KtFile): FormatResult {
+    private fun formatKtFile(ktFile: KtFile): FormatResult {
         var formatResult: FormatResult.Formatted? = null
         var currentKtFile: KtFile = ktFile
         while (true) {
-            val internalFormatResult = formatInternal(currentKtFile)
+            val internalFormatResult = formatKtFileInternal(currentKtFile)
             when (internalFormatResult) {
                 is FormatResult.NoCompanion,
                 is FormatResult.FormatNotNeeded -> {
@@ -47,17 +52,41 @@ class KtCompanionObjectFormatter(
                 }
             }
 
-            currentKtFile = fileReader.fromString(formatResult.content)
+            currentKtFile = fileParser.parseString(formatResult.content)
         }
     }
 
-    private fun formatInternal(ktFile: KtFile): FormatResult {
+    private fun formatKtFileInternal(ktFile: KtFile): FormatResult {
         val companionObjectFindResult = companionFinder.findCompanionObjects(ktFile)
         if (companionObjectFindResult.companionObjects.isEmpty()) {
             return FormatResult.NoCompanion
         }
 
-        val companionPlacementToMove = companionObjectFindResult.companionObjects
+        return moveCompanionObject(ktFile, companionObjectFindResult)
+    }
+
+    private fun moveCompanionObject(ktFile: KtFile, companionObjectFindResult: FindResult): FormatResult {
+        val companionPlacementToMove = getFirstCompanionObjectsPlacement(ktFile, companionObjectFindResult)
+        return if (companionPlacementToMove != null) {
+            val content = companionMover.moveCompanionObject(
+                ktFile = ktFile,
+                companionObject = companionPlacementToMove.first.companionObject,
+                moveAfterElement = companionPlacementToMove.second.element
+            )
+            FormatResult.Formatted(
+                content = content,
+                affectedClasses = listOf(companionPlacementToMove.first.containingClass)
+            )
+        } else {
+            FormatResult.FormatNotNeeded
+        }
+    }
+
+    private fun getFirstCompanionObjectsPlacement(
+        ktFile: KtFile,
+        companionObjectFindResult: FindResult
+    ): Pair<CompanionObject, Placement.AfterElement>? {
+        return companionObjectFindResult.companionObjects
             .map { companion ->
                 val companionNewPlacement = companionNewPlacementFinder.findCompanionObjectNewPlacementLine(
                     ktFile = ktFile,
@@ -65,22 +94,15 @@ class KtCompanionObjectFormatter(
                 )
                 companion to companionNewPlacement
             }
-            .filter { (_, companionNewPlacement) -> companionNewPlacement is Result.PlacementAfter }
-            .map { (a, b) -> a to b as Result.PlacementAfter }
+            .filter { (_, companionNewPlacement) ->
+                companionNewPlacement is Placement.AfterElement
+            }
+            .map { (companion, companionNewPlacement) ->
+                companion to companionNewPlacement as Placement.AfterElement
+            }
             .firstOrNull { (companion, companionNewPlacement) ->
                 isNeedToMoveCompanionObject(companion.companionObject, companionNewPlacement.element)
             }
-
-        if (companionPlacementToMove != null) {
-            val content = companionMover.moveCompanionObject(
-                ktFile = ktFile,
-                companionObject = companionPlacementToMove.first.companionObject,
-                moveAfterElement = companionPlacementToMove.second.element
-            )
-            return FormatResult.Formatted(content, listOf(companionPlacementToMove.first.containingClass))
-        }
-
-        return FormatResult.FormatNotNeeded
     }
 
     private fun isNeedToMoveCompanionObject(

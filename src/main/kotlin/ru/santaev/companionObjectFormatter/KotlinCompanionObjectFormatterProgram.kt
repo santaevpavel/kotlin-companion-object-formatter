@@ -1,6 +1,9 @@
+package ru.santaev.companionObjectFormatter
+
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.file
+import ru.santaev.companionObjectFormatter.placementFinder.PlacementAtBottomOfClassFinder
 import java.io.File
 
 fun main(args: Array<String>) {
@@ -38,8 +41,8 @@ class KotlinCompanionObjectFormatterProgram : CliktCommand() {
         KtCompanionObjectFormatter(
             companionFinder = KtCompanionObjectFinder(),
             companionMover = KtCompanionObjectMover(KtElementBoundFinder()),
-            fileReader = KtFileReader(),
-            companionNewPlacementFinder = KtCompanionObjectNewPlacementFinder()
+            fileParser = KtFileParser(),
+            companionNewPlacementFinder = PlacementAtBottomOfClassFinder()
         ).format(file)
     }
 
@@ -47,5 +50,3 @@ class KotlinCompanionObjectFormatterProgram : CliktCommand() {
         private const val KT_FILE_EXTENSION = ".kt"
     }
 }
-
-

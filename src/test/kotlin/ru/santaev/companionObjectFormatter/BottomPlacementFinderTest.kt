@@ -1,25 +1,28 @@
-import KtCompanionObjectNewPlacementFinder.Result
+package ru.santaev.companionObjectFormatter
+
 import org.hamcrest.core.IsInstanceOf
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
-import utils.KtFunctionFinder
-import utils.KtСlassFinder
+import ru.santaev.companionObjectFormatter.placementFinder.IKtCompanionObjectPlacementFinder.Placement
+import ru.santaev.companionObjectFormatter.placementFinder.PlacementAtBottomOfClassFinder
+import ru.santaev.companionObjectFormatter.utils.KtClassFinder
+import ru.santaev.companionObjectFormatter.utils.KtFunctionFinder
 
-class KtCompanionObjectNewPlacementFinderTest {
+class BottomPlacementFinderTest {
 
-    private lateinit var placementFinder: KtCompanionObjectNewPlacementFinder
+    private lateinit var placementFinder: PlacementAtBottomOfClassFinder
 
     @Before
     fun setUp() {
-        placementFinder = KtCompanionObjectNewPlacementFinder()
+        placementFinder = PlacementAtBottomOfClassFinder()
     }
 
     @Test
     fun `should find bottom of class`() {
         val file =
-            """class Sample {
+            """class ru.santaev.companionObjectFormatter.Sample {
 
                 fun foo(): Int = 0
 
@@ -28,20 +31,20 @@ class KtCompanionObjectNewPlacementFinderTest {
                 }
             }
             """
-        val ktFile = KtFileReader().fromString(file)
-        val ktClass = KtСlassFinder("Sample").also { ktFile.accept(it) }.klass
+        val ktFile = KtFileParser().parseString(file)
+        val ktClass = KtClassFinder("ru.santaev.companionObjectFormatter.Sample").also { ktFile.accept(it) }.klass
         val barFunction = KtFunctionFinder("bar").also { ktFile.accept(it) }.function
 
         val result = placementFinder.findCompanionObjectNewPlacementLine(ktFile, ktClass!!)
 
-        assertThat(result, IsInstanceOf(Result.PlacementAfter::class.java))
-        assertEquals((result as KtCompanionObjectNewPlacementFinder.Result.PlacementAfter).element, barFunction)
+        assertThat(result, IsInstanceOf(Placement.AfterElement::class.java))
+        assertEquals((result as Placement.AfterElement).element, barFunction)
     }
 
     @Test
     fun `should find bottom of class above inner class`() {
         val file =
-            """class Sample {
+            """class ru.santaev.companionObjectFormatter.Sample {
 
                 fun foo(): Int = 0
 
@@ -56,20 +59,20 @@ class KtCompanionObjectNewPlacementFinderTest {
                 }
             }
             """
-        val ktFile = KtFileReader().fromString(file)
-        val ktClass = KtСlassFinder("Sample").also { ktFile.accept(it) }.klass
+        val ktFile = KtFileParser().parseString(file)
+        val ktClass = KtClassFinder("ru.santaev.companionObjectFormatter.Sample").also { ktFile.accept(it) }.klass
         val barFunction = KtFunctionFinder("bar").also { ktFile.accept(it) }.function
 
         val result = placementFinder.findCompanionObjectNewPlacementLine(ktFile, ktClass!!)
 
-        assertThat(result, IsInstanceOf(Result.PlacementAfter::class.java))
-        assertEquals((result as KtCompanionObjectNewPlacementFinder.Result.PlacementAfter).element, barFunction)
+        assertThat(result, IsInstanceOf(Placement.AfterElement::class.java))
+        assertEquals((result as Placement.AfterElement).element, barFunction)
     }
 
     @Test
     fun `should find bottom of class with inner class`() {
         val file =
-            """class Sample {
+            """class ru.santaev.companionObjectFormatter.Sample {
 
                 companion object {
                     private const val A = "a"
@@ -90,21 +93,21 @@ class KtCompanionObjectNewPlacementFinderTest {
                 private fun bar() = 1
             }
             """
-        val ktFile = KtFileReader().fromString(file)
+        val ktFile = KtFileParser().parseString(file)
 
-        val ktClass = KtСlassFinder("Sample").also { ktFile.accept(it) }.klass
+        val ktClass = KtClassFinder("ru.santaev.companionObjectFormatter.Sample").also { ktFile.accept(it) }.klass
         val barFunction = KtFunctionFinder("bar").also { ktFile.accept(it) }.function
 
         val result = placementFinder.findCompanionObjectNewPlacementLine(ktFile, ktClass!!)
 
-        assertThat(result, IsInstanceOf(Result.PlacementAfter::class.java))
-        assertEquals((result as KtCompanionObjectNewPlacementFinder.Result.PlacementAfter).element, barFunction)
+        assertThat(result, IsInstanceOf(Placement.AfterElement::class.java))
+        assertEquals((result as Placement.AfterElement).element, barFunction)
     }
 
     @Test
     fun `should find bottom of inner class`() {
         val file =
-            """class Sample {
+            """class ru.santaev.companionObjectFormatter.Sample {
 
                 fun foo(): Int = 0
 
@@ -121,14 +124,14 @@ class KtCompanionObjectNewPlacementFinderTest {
                 }
             }
             """
-        val ktFile = KtFileReader().fromString(file)
-        val ktClass = KtСlassFinder("Inner").also { ktFile.accept(it) }.klass
+        val ktFile = KtFileParser().parseString(file)
+        val ktClass = KtClassFinder("Inner").also { ktFile.accept(it) }.klass
         val fooInnerFunction = KtFunctionFinder("fooInner").also { ktFile.accept(it) }.function
 
         val result = placementFinder.findCompanionObjectNewPlacementLine(ktFile, ktClass!!)
 
-        assertThat(result, IsInstanceOf(Result.PlacementAfter::class.java))
-        assertEquals((result as KtCompanionObjectNewPlacementFinder.Result.PlacementAfter).element, fooInnerFunction)
+        assertThat(result, IsInstanceOf(Placement.AfterElement::class.java))
+        assertEquals((result as Placement.AfterElement).element, fooInnerFunction)
     }
 
 }

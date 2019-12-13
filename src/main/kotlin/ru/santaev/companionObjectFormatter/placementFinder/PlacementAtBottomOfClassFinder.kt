@@ -1,23 +1,27 @@
+package ru.santaev.companionObjectFormatter.placementFinder
+
 import org.jetbrains.kotlin.psi.*
 
-class KtCompanionObjectNewPlacementFinder {
+class PlacementAtBottomOfClassFinder : IKtCompanionObjectPlacementFinder {
 
-    fun findCompanionObjectNewPlacementLine(
+    override fun findCompanionObjectNewPlacementLine(
         ktFile: KtFile,
         ktClass: KtClass
-    ): Result {
+    ): IKtCompanionObjectPlacementFinder.Placement {
         val classBody = ktClass.children
             .filterIsInstance<KtClassBody>()
             .firstOrNull()
-            ?: return Result.NoPlacement
+            ?: return IKtCompanionObjectPlacementFinder.Placement.None
         val lastNonClassElement = getFunctionsAndClasses(classBody)
             .lastOrNull { ktElement ->
                 ktElement !is KtClass && ktElement !is KtObjectDeclaration
             }
         return if (lastNonClassElement == null) {
-            Result.NoPlacement
+            IKtCompanionObjectPlacementFinder.Placement.None
         } else {
-            Result.PlacementAfter(lastNonClassElement)
+            IKtCompanionObjectPlacementFinder.Placement.AfterElement(
+                lastNonClassElement
+            )
         }
     }
 
@@ -42,12 +46,5 @@ class KtCompanionObjectNewPlacementFinder {
         }
         classBody.acceptChildren(visitor)
         return functionsAndClasses
-    }
-
-    sealed class Result {
-
-        object NoPlacement : Result()
-
-        class PlacementAfter(val element: KtElement) : Result()
     }
 }

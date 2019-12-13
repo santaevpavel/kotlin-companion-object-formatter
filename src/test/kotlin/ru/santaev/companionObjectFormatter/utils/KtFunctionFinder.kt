@@ -1,4 +1,4 @@
-package utils
+package ru.santaev.companionObjectFormatter.utils
 
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedFunction
@@ -16,7 +16,7 @@ class KtFunctionFinder(private val name: String) : KtTreeVisitorVoid() {
     }
 }
 
-class KtСlassFinder(private val name: String) : KtTreeVisitorVoid() {
+class KtClassFinder(private val name: String) : KtTreeVisitorVoid() {
 
     var klass: KtClass? = null
 

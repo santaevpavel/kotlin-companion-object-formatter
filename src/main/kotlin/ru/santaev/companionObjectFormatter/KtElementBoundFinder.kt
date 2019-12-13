@@ -1,8 +1,10 @@
+package ru.santaev.companionObjectFormatter
+
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiElementVisitor
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
-import utils.line
+import ru.santaev.companionObjectFormatter.utils.line
 import kotlin.math.max
 
 class KtElementBoundFinder {

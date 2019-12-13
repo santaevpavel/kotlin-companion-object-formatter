@@ -1,8 +1,10 @@
+package ru.santaev.companionObjectFormatter
+
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.IsEqual
 import org.junit.Before
 import org.junit.Test
-import utils.KtFunctionFinder
+import ru.santaev.companionObjectFormatter.utils.KtFunctionFinder
 
 class CompanionObjectMoverTest {
 
@@ -10,13 +12,14 @@ class CompanionObjectMoverTest {
 
     @Before
     fun setup() {
-        companionObjectMover = KtCompanionObjectMover(KtElementBoundFinder())
+        companionObjectMover =
+            KtCompanionObjectMover(KtElementBoundFinder())
     }
 
     @Test
     fun `should move companion after specified function`() {
         val file =
-            """class Sample {
+            """class ru.santaev.companionObjectFormatter.Sample {
 
                 companion object {
                     private const val AA = "123"
@@ -29,7 +32,7 @@ class CompanionObjectMoverTest {
                 }
             }
             """
-        val ktFile = KtFileReader().fromString(file)
+        val ktFile = KtFileParser().parseString(file)
         val companionObjectFindResult = KtCompanionObjectFinder().findCompanionObjects(ktFile)
         val barFunction = requireNotNull(KtFunctionFinder("bar").also { ktFile.accept(it) }.function)
         val companion = companionObjectFindResult.companionObjects.first()
@@ -43,7 +46,7 @@ class CompanionObjectMoverTest {
         println(result)
 
         val expectingResult =
-            """class Sample {
+            """class ru.santaev.companionObjectFormatter.Sample {
 
                 fun foo(): Int = 0
 
@@ -62,7 +65,7 @@ class CompanionObjectMoverTest {
     @Test
     fun `should move companion after specified function in inner class`() {
         val file =
-            """class Sample {
+            """class ru.santaev.companionObjectFormatter.Sample {
 
                 class Inner {
                     companion object {
@@ -73,7 +76,7 @@ class CompanionObjectMoverTest {
                 }
             }
             """
-        val ktFile = KtFileReader().fromString(file)
+        val ktFile = KtFileParser().parseString(file)
         val companionObjectFindResult = KtCompanionObjectFinder().findCompanionObjects(ktFile)
         val barFunction = requireNotNull(KtFunctionFinder("foo").also { ktFile.accept(it) }.function)
         val companion = companionObjectFindResult.companionObjects.first()
@@ -87,7 +90,7 @@ class CompanionObjectMoverTest {
         println(result)
 
         val expectingResult =
-            """class Sample {
+            """class ru.santaev.companionObjectFormatter.Sample {
 
                 class Inner {
 

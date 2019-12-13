@@ -1,4 +1,4 @@
-package utils
+package ru.santaev.companionObjectFormatter.utils
 
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiFile

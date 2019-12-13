@@ -1,3 +1,5 @@
+package ru.santaev.companionObjectFormatter
+
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtObjectDeclaration

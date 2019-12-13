@@ -1,3 +1,5 @@
+package ru.santaev.companionObjectFormatter
+
 import org.hamcrest.collection.IsCollectionWithSize
 import org.hamcrest.collection.IsEmptyCollection
 import org.hamcrest.core.IsEqual
@@ -17,7 +19,7 @@ class KtCompanionFinderTest {
     @Test
     fun `should find companion object on class top`() {
         val file =
-            """class Sample {
+            """class ru.santaev.companionObjectFormatter.Sample {
 
                 companion object {
                     private const val AAAA = 0
@@ -30,7 +32,7 @@ class KtCompanionFinderTest {
                 }
             }
             """
-        val ktFile = KtFileReader().fromString(file)
+        val ktFile = KtFileParser().parseString(file)
         val result = finder.findCompanionObjects(ktFile)
 
         assertThat(result.companionObjects, IsCollectionWithSize(IsEqual(1)))
@@ -39,7 +41,7 @@ class KtCompanionFinderTest {
     @Test
     fun `should find companion object on class bottom`() {
         val file =
-            """class Sample {
+            """class ru.santaev.companionObjectFormatter.Sample {
 
                 fun foo(): Int = 0
 
@@ -52,7 +54,7 @@ class KtCompanionFinderTest {
                 }
             }
             """
-        val ktFile = KtFileReader().fromString(file)
+        val ktFile = KtFileParser().parseString(file)
         val result = finder.findCompanionObjects(ktFile)
 
         assertThat(result.companionObjects, IsCollectionWithSize(IsEqual(1)))
@@ -61,7 +63,7 @@ class KtCompanionFinderTest {
     @Test
     fun `should not find companion object`() {
         val file =
-            """class Sample {
+            """class ru.santaev.companionObjectFormatter.Sample {
 
                 fun foo(): Int = 0
 
@@ -70,7 +72,7 @@ class KtCompanionFinderTest {
                 }
             }
             """
-        val ktFile = KtFileReader().fromString(file)
+        val ktFile = KtFileParser().parseString(file)
         val result = finder.findCompanionObjects(ktFile)
 
         assertThat(result.companionObjects, IsEmptyCollection())
@@ -79,7 +81,7 @@ class KtCompanionFinderTest {
     @Test
     fun `should not find object`() {
         val file =
-            """class Sample {
+            """class ru.santaev.companionObjectFormatter.Sample {
 
                 fun foo(): Int = 0
 
@@ -90,7 +92,7 @@ class KtCompanionFinderTest {
                 }
             }
             """
-        val ktFile = KtFileReader().fromString(file)
+        val ktFile = KtFileParser().parseString(file)
         val result = finder.findCompanionObjects(ktFile)
 
         assertThat(result.companionObjects, IsEmptyCollection())
@@ -99,7 +101,7 @@ class KtCompanionFinderTest {
     @Test
     fun `should find two companion object`() {
         val file =
-            """class Sample {
+            """class ru.santaev.companionObjectFormatter.Sample {
 
                 companion object {
                     private val AA = "asd"
@@ -118,7 +120,7 @@ class KtCompanionFinderTest {
                 }
             }
             """
-        val ktFile = KtFileReader().fromString(file)
+        val ktFile = KtFileParser().parseString(file)
         val result = finder.findCompanionObjects(ktFile)
 
         assertThat(result.companionObjects, IsCollectionWithSize(IsEqual(2)))

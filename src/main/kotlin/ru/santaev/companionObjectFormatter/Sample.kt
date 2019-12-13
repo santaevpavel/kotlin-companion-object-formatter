@@ -1,3 +1,5 @@
+package ru.santaev.companionObjectFormatter
+
 class Sample {
 
     fun foo(): Int = 0
