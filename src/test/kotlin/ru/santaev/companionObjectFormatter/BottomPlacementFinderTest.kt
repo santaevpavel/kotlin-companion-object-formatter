@@ -9,6 +9,7 @@ import ru.santaev.companionObjectFormatter.placementFinder.IKtCompanionObjectPla
 import ru.santaev.companionObjectFormatter.placementFinder.PlacementAtBottomOfClassFinder
 import ru.santaev.companionObjectFormatter.utils.KtClassFinder
 import ru.santaev.companionObjectFormatter.utils.KtFunctionFinder
+import ru.santaev.companionObjectFormatter.utils.KtSecondaryConstructorFinder
 
 class BottomPlacementFinderTest {
 
@@ -132,5 +133,35 @@ class BottomPlacementFinderTest {
 
         assertThat(result, IsInstanceOf(Placement.AfterElement::class.java))
         assertEquals((result as Placement.AfterElement).element, fooInnerFunction)
+    }
+
+    @Test
+    fun `should find below constructors`() {
+        val file =
+            """class Sample {
+
+                companion object {
+                    private const val A = "a"
+                }
+
+                fun foo(): Int = 0
+
+                private fun bar(): Int {
+                    return 0
+                }
+
+                constructor() {
+                    val b = 0
+                }
+            }
+            """
+        val ktFile = KtFileParser().parseString(file)
+        val ktClass = KtClassFinder("Sample").also { ktFile.accept(it) }.klass
+        val constructor = KtSecondaryConstructorFinder().also { ktFile.accept(it) }.constructor
+
+        val result = placementFinder.findCompanionObjectNewPlacementLine(ktFile, ktClass!!)
+
+        assertThat(result, IsInstanceOf(Placement.AfterElement::class.java))
+        assertEquals(constructor, (result as Placement.AfterElement).element)
     }
 }

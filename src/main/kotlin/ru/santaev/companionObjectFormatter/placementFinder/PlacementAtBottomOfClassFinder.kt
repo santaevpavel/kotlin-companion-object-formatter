@@ -29,6 +29,11 @@ class PlacementAtBottomOfClassFinder : IKtCompanionObjectPlacementFinder {
         val functionsAndClasses = mutableListOf<KtElement>()
         val visitor = object : KtVisitorVoid() {
 
+            override fun visitSecondaryConstructor(constructor: KtSecondaryConstructor) {
+                super.visitSecondaryConstructor(constructor)
+                functionsAndClasses.add(constructor)
+            }
+
             override fun visitNamedFunction(function: KtNamedFunction) {
                 super.visitNamedFunction(function)
                 functionsAndClasses.add(function)

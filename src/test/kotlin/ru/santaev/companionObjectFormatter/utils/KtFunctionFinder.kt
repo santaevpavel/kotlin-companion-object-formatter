@@ -2,6 +2,7 @@ package ru.santaev.companionObjectFormatter.utils
 
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.KtSecondaryConstructor
 import org.jetbrains.kotlin.psi.KtTreeVisitorVoid
 
 class KtFunctionFinder(private val name: String) : KtTreeVisitorVoid() {
@@ -25,5 +26,15 @@ class KtClassFinder(private val name: String) : KtTreeVisitorVoid() {
         if (klass.name == name) {
             this.klass = klass
         }
+    }
+}
+
+class KtSecondaryConstructorFinder() : KtTreeVisitorVoid() {
+
+    var constructor: KtSecondaryConstructor? = null
+
+    override fun visitSecondaryConstructor(constructor: KtSecondaryConstructor) {
+        super.visitSecondaryConstructor(constructor)
+        this.constructor = constructor
     }
 }
