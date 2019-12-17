@@ -125,4 +125,25 @@ class KtCompanionFinderTest {
 
         assertThat(result.companionObjects, IsCollectionWithSize(IsEqual(2)))
     }
+
+    @Test
+    fun `should companion object below inner class`() {
+        val file =
+            """class Sample {
+
+                class A {
+                    val a = 0
+                }
+
+                companion object {
+                    private val AA = "asd"
+                }
+            }
+            """
+        val ktFile = KtFileParser().parseString(file)
+        val result = finder.findCompanionObjects(ktFile)
+
+        assertThat(result.companionObjects, IsCollectionWithSize(IsEqual(1)))
+        assertThat(result.companionObjects.first().containingClass.name, IsEqual("Sample"))
+    }
 }

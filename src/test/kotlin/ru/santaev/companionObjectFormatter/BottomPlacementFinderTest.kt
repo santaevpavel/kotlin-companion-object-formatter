@@ -153,6 +153,10 @@ class BottomPlacementFinderTest {
                 constructor() {
                     val b = 0
                 }
+
+                constructor(arg: Int) {
+                    val b = arg
+                }
             }
             """
         val ktFile = KtFileParser().parseString(file)

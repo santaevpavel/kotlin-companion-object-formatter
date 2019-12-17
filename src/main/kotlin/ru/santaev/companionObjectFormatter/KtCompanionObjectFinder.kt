@@ -1,6 +1,7 @@
 package ru.santaev.companionObjectFormatter
 
 import org.jetbrains.kotlin.psi.*
+import java.util.*
 
 class KtCompanionObjectFinder {
 
@@ -28,7 +29,7 @@ class KtCompanionObjectFinder {
     private class CompanionObjectFinderVisitor(private val file: KtFile) : KtTreeVisitorVoid() {
 
         val companionObjects = mutableListOf<CompanionObject>()
-        private var currentClass: KtClass? = null
+        private var classStack: Deque<KtClass> = ArrayDeque()
 
         override fun visitObjectDeclaration(declaration: KtObjectDeclaration) {
             super.visitObjectDeclaration(declaration)
@@ -36,7 +37,7 @@ class KtCompanionObjectFinder {
                 val companionBody = declaration.children
                     .filterIsInstance<KtClassBody>()
                     .firstOrNull()
-                val containingClass = currentClass
+                val containingClass = if (classStack.isEmpty()) null else classStack.peek()
                 if (companionBody != null && containingClass != null) {
                     companionObjects.add(CompanionObject(file, containingClass, declaration))
                 }
@@ -45,9 +46,9 @@ class KtCompanionObjectFinder {
 
         override fun visitClass(klass: KtClass) {
             if (klass !is KtEnumEntry) {
-                currentClass = klass
+                classStack.push(klass)
                 super.visitClass(klass)
-                currentClass = null
+                classStack.pop()
             } else {
                 super.visitClass(klass)
             }
