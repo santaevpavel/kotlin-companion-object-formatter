@@ -71,7 +71,7 @@ class KtCompanionObjectFormatter(
             val content = companionMover.moveCompanionObject(
                 ktFile = ktFile,
                 companionObject = companionPlacementToMove.first.companionObject,
-                moveAfterElement = companionPlacementToMove.second.element
+                tallElement = companionPlacementToMove.second.element
             )
             FormatResult.Formatted(
                 content = content,

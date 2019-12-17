@@ -11,17 +11,36 @@ class KtCompanionObjectMover(
     fun moveCompanionObject(
         ktFile: KtFile,
         companionObject: KtObjectDeclaration,
-        moveAfterElement: KtElement
+        tallElement: KtElement
     ): String {
         val content = ktFile.text
         val companionBounds = elementBoundFinder.find(ktFile, companionObject)
-        val topElementBounds = elementBoundFinder.find(ktFile, moveAfterElement)
         val contentLines = content.lines().toMutableList()
         val companionObjectLines = content.lines().filterIndexed { index, _ -> (index + 1) in companionBounds.range }
         val numberOfRemovedLines = removeCompanionObject(contentLines, companionBounds)
-        val companionNewPlacementLine = topElementBounds.endLine - numberOfRemovedLines
-        insertCompanionObject(companionObjectLines, contentLines, companionNewPlacementLine)
+        val companionInsertionLine = getCompanionInsertionLine(
+            ktFile = ktFile,
+            tallElement = tallElement,
+            numberOfRemovedLines = numberOfRemovedLines,
+            previousCompanionPlacementLine = companionBounds.startLine
+        )
+        insertCompanionObject(companionObjectLines, contentLines, companionInsertionLine)
         return contentLines.joinToString(LINE_SEPARATOR)
+    }
+
+    private fun getCompanionInsertionLine(
+        ktFile: KtFile,
+        tallElement: KtElement,
+        numberOfRemovedLines: Int,
+        previousCompanionPlacementLine: Int
+    ): Int {
+        val tallElementBounds = elementBoundFinder.find(ktFile, tallElement)
+        val isNeedToMoveUpCompanion = tallElementBounds.endLine < previousCompanionPlacementLine
+        return if (isNeedToMoveUpCompanion) {
+            tallElementBounds.endLine
+        } else {
+            tallElementBounds.endLine - numberOfRemovedLines
+        }
     }
 
     private fun removeCompanionObject(

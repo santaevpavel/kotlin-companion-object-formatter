@@ -168,4 +168,31 @@ class BottomPlacementFinderTest {
         assertThat(result, IsInstanceOf(Placement.AfterElement::class.java))
         assertEquals(constructor, (result as Placement.AfterElement).element)
     }
+
+    @Test
+    fun `should find above inner class and below function`() {
+        val file =
+            """class Sample {
+
+                fun foo(): Int = 0
+
+                inner class A {
+
+                    fun bar() = 0
+                }
+
+                companion object {
+                    private const val A = "a"
+                }
+            }
+            """
+        val ktFile = KtFileParser().parseString(file)
+        val ktClass = KtClassFinder("Sample").also { ktFile.accept(it) }.klass
+        val function = KtFunctionFinder("foo").also { ktFile.accept(it) }.function
+
+        val result = placementFinder.findCompanionObjectNewPlacementLine(ktFile, ktClass!!)
+
+        assertThat(result, IsInstanceOf(Placement.AfterElement::class.java))
+        assertEquals(function, (result as Placement.AfterElement).element)
+    }
 }
